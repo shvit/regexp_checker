@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+
+bin
+results
+.vscode
+feeds/ximtech/checker_ximtech
+feeds/tiny-regex-c/checker_tiny-regex-c
+feeds/stdlib-compiled/checker_stdlib-compiled
+repo
