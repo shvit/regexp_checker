@@ -4,7 +4,7 @@ DIR_BIN=bin
 CHEKER=checker
 APP=checker_$(NAME)
 
-CFLAGS+=-Wall -fPIC -std=c++17 -MMD -g -O0
+CFLAGS+=-Wall -fPIC -std=c++17 -O3
 LDFLAGS+=-lstdc++
 
 GLOBAL_LOG=$(shell date +"%Y-%m-%d_%Hh%Mm%Ss")-single.log
