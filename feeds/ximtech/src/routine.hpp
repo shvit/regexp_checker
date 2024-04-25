@@ -37,6 +37,7 @@ public:
                 std::get<bool>(rules_[idx]) = true;
             }
         }
+        metric_ext_.resize(rules_.size());
         return true;
     }
 
@@ -49,7 +50,7 @@ public:
         for (size_t iter_td = 0; iter_td < scale_td_; ++iter_td) {
             for (auto& data : data_) {
                 if (Matcher dummy = regexMatch(&comp_rules_[rule_idx], data.data()); dummy.isFound) {
-                    ++metric_;
+                    ++metric_ext_[rule_idx];
                 }
             }
         }

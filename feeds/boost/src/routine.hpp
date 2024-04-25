@@ -31,6 +31,7 @@ public:
                 std::get<bool>(rules_[idx]) = true;
             }
         }
+        metric_ext_.resize(rules_.size());
         return true;
     }
 
@@ -42,7 +43,7 @@ public:
         for (size_t iter_td = 0; iter_td < scale_td_; ++iter_td) {
             for (auto& data : data_) {
                 if (boost::regex_match(data.cbegin(), data.cend(), comp_rules_[rule_idx])) {
-                    ++metric_;
+                    ++metric_ext_[rule_idx];
                 }
             }
         }

@@ -23,6 +23,7 @@ public:
     */
     virtual bool init() override {
         name_ = "stdlib";
+        metric_ext_.resize(rules_.size());
         return true;
     }
 
@@ -35,7 +36,7 @@ public:
         for (size_t iter_td = 0; iter_td < scale_td_; ++iter_td) {
             for (auto& data : data_) {
                 if (std::regex_match(data.cbegin(), data.cend(), re)) {
-                    ++metric_;
+                    ++metric_ext_[rule_idx];
                 }
             }
         }

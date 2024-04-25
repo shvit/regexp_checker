@@ -36,12 +36,23 @@ auto Base::get_metric() -> std::string
     auto seconds = std::chrono::duration_cast<std::chrono::seconds>(temp_duration);
     temp_duration -= seconds;
     auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(temp_duration);
-    std::stringstream ss2;
-    if (hours.count()) ss2 << hours.count() << "h";
-    if (minutes.count() || (ss2.tellp() > 0)) ss2 << minutes.count() << "m";
-    ss2 << seconds.count() << "." << milliseconds.count() << "s";
-    push_metric("duration", ss2.str());
-    push_metric("match_metric=", metric_);
+    {
+        std::stringstream ss2;
+        if (hours.count()) ss2 << hours.count() << "h";
+        if (minutes.count() || (ss2.tellp() > 0)) ss2 << minutes.count() << "m";
+        ss2 << seconds.count() << "." << milliseconds.count() << "s";
+        push_metric("duration", ss2.str());
+    }
+    {
+        std::stringstream ss2;
+        size_t sum = 0U;
+        for (size_t idx = 0U; idx < metric_ext_.size(); ++idx) {
+            ss2 << (ss2.tellp() > 0 ? "," : "") << (idx + 1U) << "{" << (std::get<bool>(rules_[idx]) ? "bad" : std::to_string(metric_ext_[idx])) << "}";
+            sum += (std::get<bool>(rules_[idx]) ? 0U : metric_ext_[idx]);
+        }
+        ss2 << (ss2.tellp() > 0 ? "," : "") << "SUM{" << sum << "}";
+        push_metric("rule_metric=", ss2.str());
+    }
 
     return ss.str();
 }

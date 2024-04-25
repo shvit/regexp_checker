@@ -28,7 +28,7 @@ protected:
 
     std::string name_{}; ///< Current regexp name (need will fill in init())
 
-    size_t metric_{0U}; ///< Metric of matching
+    std::vector<size_t> metric_ext_{}; ///< Metric of matching
 
     /** @brief Check is ready for prepare
      *
