@@ -1,14 +1,9 @@
 #pragma once
 
+#include <regex>
+
 #include "../../../src/checker.hpp"
 #include "../../../src/base.hpp"
-
-extern "C" {
-    #include "../repo/include/Regex.h"
-
-    void regexCompile(Regex *regex, const char *pattern);
-    Matcher regexMatch(Regex *regex, const char *text);
-}
 
 /** @brief Virtual class for testing regexp
  * 
@@ -18,7 +13,7 @@ extern "C" {
 class Routine: public Base {
 protected:
 
-    std::vector<Regex> comp_rules_; ///< Storage for compiled regexp
+    std::vector<std::regex> comp_rules_; ///< Storage for compiled regexp
 
 public:
 
@@ -29,11 +24,11 @@ public:
      * @return True on success and no errors else false
     */
     virtual bool init() override {
-        name_ = "ximtech";
-        comp_rules_.reserve(rules_.size());
-        for (size_t idx = 0U; idx < comp_rules_.size(); ++idx) {
-            regexCompile(&comp_rules_[idx], std::get<std::string>(rules_[idx]).c_str());
-            if (!comp_rules_[idx].isPatternValid) {
+        name_ = "stdlib-compile";
+        for (size_t idx = 0U; idx < rules_.size(); ++idx) {
+            try {
+                comp_rules_.emplace_back(std::get<std::string>(rules_[idx]));
+            } catch (...) {
                 std::get<bool>(rules_[idx]) = true;
             }
         }
@@ -48,7 +43,9 @@ public:
     virtual void check(size_t rule_idx) override {
         for (size_t iter_td = 0; iter_td < scale_td_; ++iter_td) {
             for (auto& data : data_) {
-                regexMatch(&comp_rules_[rule_idx], data.data());
+                if (std::regex_match(data.cbegin(), data.cend(), comp_rules_[rule_idx])) {
+                    ++metric_;
+                }
             }
         }
     }

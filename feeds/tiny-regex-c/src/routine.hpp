@@ -49,7 +49,9 @@ public:
         int dummy = 0;
         for (size_t iter_td = 0; iter_td < scale_td_; ++iter_td) {
             for (auto& data : data_) {
-                re_matchp(comp_rules_[rule_idx], data.data(), &dummy);
+                if (re_matchp(comp_rules_[rule_idx], data.data(), &dummy) > -1) {
+                    ++metric_;
+                }
             }
         }
     }

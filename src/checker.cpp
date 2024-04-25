@@ -1,23 +1,25 @@
 #include <cstdlib>
 #include <iostream>
+#include <string>
+#include <filesystem>
 
-#include "checker.hpp"
-#include "base.hpp"
+#include "routine.hpp"
 
-constexpr std::string_view test_rule_dir = "test/regexp";
-constexpr std::string_view test_data_dir = "test/data";
+namespace fs = std::filesystem;
+
+const fs::path test_rule_dir = fs::path("test") / fs::path("regexp");
+const fs::path test_data_dir = fs::path("test") / fs::path("data");
 
 int main(int argc, char* argv[])
 {
-    Base b;
+    Routine b;
     do {
-        //std::cout << "Preparing ..." << std::endl;
         if (!b.prepare(argc > 1 ? argv[1] : test_rule_dir,
                        argc > 2 ? argv[2] : test_data_dir)) {
             break;
         }
 
-        //std::cout << "Run ..." << std::endl;
+        std::cout << std::endl;
         b.run();
     } while(false);
 

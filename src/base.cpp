@@ -1,13 +1,10 @@
 #include <cassert>
 #include <string>
 #include <sstream>
-#include <filesystem>
 #include <fstream>
 #include <regex>
 
 #include "base.hpp"
-
-namespace fs = std::filesystem;
 
 auto Base::get_metric() -> std::string
 {
@@ -44,6 +41,7 @@ auto Base::get_metric() -> std::string
     if (minutes.count() || (ss2.tellp() > 0)) ss2 << minutes.count() << "m";
     ss2 << seconds.count() << "." << milliseconds.count() << "s";
     push_metric("duration", ss2.str());
+    push_metric("match_metric=", metric_);
 
     return ss.str();
 }
@@ -58,7 +56,7 @@ bool Base::is_ready_run() const
     return !errors_.size() && rules_.size() && data_.size();
 }
 
-bool Base::prepare(std::string_view dir_regexp, std::string_view dir_data)
+bool Base::prepare(const fs::path dir_regexp, const fs::path dir_data)
 {
     if (!is_ready_prepare()) {
         errors_.emplace_back("Try to prepare when not ready to prepare");
@@ -66,9 +64,8 @@ bool Base::prepare(std::string_view dir_regexp, std::string_view dir_data)
     }
 
     // Load RegExp
-    const fs::path dir_re{dir_regexp};
-    if (fs::is_directory(fs::status(dir_re))) {
-        for (auto const& iter_dir : fs::recursive_directory_iterator{dir_re}) {
+    if (fs::is_directory(fs::status(dir_regexp))) {
+        for (auto const& iter_dir : fs::recursive_directory_iterator{dir_regexp}) {
             if (fs::is_regular_file(fs::status(iter_dir))) {
 
                 std::ifstream in(std::string{iter_dir.path()});
@@ -91,14 +88,13 @@ bool Base::prepare(std::string_view dir_regexp, std::string_view dir_data)
         }
     } else {
         std::stringstream ss;
-        ss << "Directory " << dir_re << " not found";
+        ss << "Directory " << dir_regexp << " not found";
         errors_.emplace_back(ss.str());
     }
 
     // Load data chunks
-    const fs::path dir_td{dir_data};
-    if (fs::is_directory(fs::status(dir_td))) {
-        for (auto const& iter_dir : fs::recursive_directory_iterator{dir_td}) {
+    if (fs::is_directory(fs::status(dir_data))) {
+        for (auto const& iter_dir : fs::recursive_directory_iterator{dir_data}) {
             if (fs::is_regular_file(fs::status(iter_dir))) {
                 size_t file_size = fs::file_size(iter_dir.path());
                 std::ifstream data_file(iter_dir.path(), std::ios::binary);
@@ -109,28 +105,11 @@ bool Base::prepare(std::string_view dir_regexp, std::string_view dir_data)
         }
     } else {
         std::stringstream ss;
-        ss << "Directory " << dir_td << " not found";
+        ss << "Directory " << dir_data << " not found";
         errors_.emplace_back(ss.str());
     }
 
     return is_ready_run();
-}
-
-bool Base::init()
-{
-    // Default no need any init
-    name_ = "stdlib";
-    return true;
-}
-
-void Base::check(size_t rule_idx)
-{
-    const std::regex re{std::get<std::string>(rules_[rule_idx])};
-    for (size_t iter_td = 0; iter_td < scale_td_; ++iter_td) {
-        for (auto& data : data_) {
-            std::regex_match(data.cbegin(), data.cend(), re);
-        }
-    }
 }
 
 bool Base::run()
@@ -140,9 +119,11 @@ bool Base::run()
         return false;
     }
 
-    if(!init()) {
-        errors_.emplace_back("Failed initialize - bad call init()");
-        return false;
+    if (name_.empty()) {
+        if(!init()) {
+            errors_.emplace_back("Failed initialize - bad call init()");
+            return false;
+        }
     }
 
     // Run
@@ -174,4 +155,9 @@ void Base::push_errors(std::ostream& os) const
 bool Base::has_errors() const
 {
     return errors_.size();
+}
+
+auto Base::get_name() const -> const std::string&
+{
+    return name_;
 }

@@ -1,12 +1,15 @@
 #pragma once
 
 #include <chrono>
+#include <filesystem>
 
 #include "checker.hpp"
 
+namespace fs = std::filesystem;
+
 using Duration = std::chrono::nanoseconds;
 
-/** @brief Virtual base class for all regex checkers
+/** @brief Virtual (abstract) base class for all regex checkers
 */
 class Base {
 protected:
@@ -15,15 +18,17 @@ protected:
 
     size_t scale_td_{default_scale_test_data}; ///< Common data iterations need for test
 
-    RegExpList rules_; ///< Regex rules for testing
+    RegExpList rules_{}; ///< Regex rules for testing
 
-    TestData data_; ///< Data chunks for testing
+    TestData data_{}; ///< Data chunks for testing
 
-    Errors errors_; ///< All errors list
+    Errors errors_{}; ///< All errors list
 
-    Duration time_; ///< Duration of test
+    Duration time_{}; ///< Duration of test
 
-    std::string name_; ///< Current regexp name (need will fill in init())
+    std::string name_{}; ///< Current regexp name (need will fill in init())
+
+    size_t metric_{0U}; ///< Metric of matching
 
     /** @brief Check is ready for prepare
      *
@@ -40,6 +45,12 @@ protected:
     bool is_ready_run() const;
 
 public:
+
+    /** @brief Get current test name
+     * 
+     * @return Const reference to current test name
+    */
+    auto get_name() const -> const std::string&;
 
     /** @brief Get string with all metric from test
      *
@@ -58,7 +69,7 @@ public:
      * @param [in] dir_data DIrectory with data chunks
      * @return True on success and no errors else false
     */
-    bool prepare(std::string_view dir_regexp, std::string_view dir_data);
+    bool prepare(const fs::path dir_regexp, const fs::path dir_data);
 
     /** @brief Run test
      *
@@ -68,20 +79,20 @@ public:
     */
     bool run();
 
-    /** @brief Virtual function for initialize
+    /** @brief Virtual (abstract) function for initialize
      *
      * Typically used for compile regexp if library is supported
      * Also need set library name to name_
      * @return True on success and no errors else false
     */
-    virtual bool init();
+    virtual bool init() = 0;
 
-    /** @brief Virtual checker for one regexp and for all data chunks
+    /** @brief Virtual (abstract) checker for one regexp and for all data chunks
      *
      * By default only for stdlib regexp
      * @param [in] rule_idx RegEx rule index for run
     */
-    virtual void check(size_t rule_idx);
+    virtual void check(size_t rule_idx) = 0;
 
     /** @brief Push errors to output stream
      *
