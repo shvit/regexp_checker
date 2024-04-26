@@ -46,6 +46,10 @@ protected:
 
 public:
 
+    /** @brief Virtual destructor
+    */
+    virtual ~Base() = default;
+
     /** @brief Get current test name
      * 
      * @return Const reference to current test name
