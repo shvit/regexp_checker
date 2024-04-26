@@ -23,7 +23,6 @@ public:
     */
     virtual bool init() override {
         name_ = "stdlib";
-        metric_ext_.resize(rules_.size());
         return true;
     }
 

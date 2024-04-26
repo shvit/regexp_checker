@@ -37,7 +37,6 @@ public:
                 std::get<bool>(rules_[idx]) = true;
             }
         }
-        metric_ext_.resize(rules_.size());
         return true;
     }
 

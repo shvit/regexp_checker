@@ -18,23 +18,38 @@ Data chunks in directory: `test/data`
 | stdlib-compiled | C++ standard library with pre compiled rules | - | 
 | tiny-regex-c | C regexp code | https://github.com/kokke/tiny-regex-c |
 | ximtech | C library | https://github.com/ximtech/Regex |
+| boost | Regex from C++ library | https://github.com/boostorg/regex.git |
 
-# Build
+# Build and run
+
+## Installing dependencies
+
+<pre>
+sudo apt install build-essential cmake ragel
+</pre>
+
+## Build
 
 <pre>
 make
 </pre>
 
-# Run tests
+## Run tests
 
 <pre>
 make check
 </pre>
 
-Show results after check
+## Show results after check
 
 <pre>
 ls -1 results
 </pre>
 
 All iterations of checks placed in seperetaed files at directory: `results`
+
+## Cleaning
+
+<pre>
+make clean
+</pre>

@@ -102,6 +102,7 @@ bool Base::prepare(const fs::path dir_regexp, const fs::path dir_data)
         ss << "Directory " << dir_regexp << " not found";
         errors_.emplace_back(ss.str());
     }
+    metric_ext_.resize(rules_.size());
 
     // Load data chunks
     if (fs::is_directory(fs::status(dir_data))) {
