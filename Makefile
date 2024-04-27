@@ -1,12 +1,16 @@
 SUBDIRS=feeds
 
-GLOBAL_LOG=$(shell date +"%Y-%m-%d_%Hh%Mm%Ss").log
+GLOBAL_LOG:=$(shell date +"%Y-%m-%d_%Hh%Mm%Ss").log
 export GLOBAL_LOG
 
-all check: $(SUBDIRS) FORCE
+all: $(SUBDIRS) FORCE
 
 clean: $(SUBDIRS) FORCE
 	rm -rf results
+
+check: $(SUBDIRS) FORCE
+	@echo "Full results:"
+	@cat results/$(GLOBAL_LOG)
 
 $(SUBDIRS): FORCE
 	$(MAKE) -C $@ $(MAKECMDGOALS) GLOBAL_LOG=$(GLOBAL_LOG)

@@ -19,22 +19,30 @@ public:
 
     /** @brief Virtual function for initialize
      *
-     * See description in class Base
+     * Typically used for compile regexp if library is supported
+     * Also need set library name to name_
+     * @return True on success and no errors else false
     */
     virtual bool init() override {
-        name_ = "stdlib";
+        for (size_t idx = 0U; idx < rules_.size(); ++idx) {
+            try {
+                comp_rules_.emplace_back(std::get<std::string>(rules_[idx]));
+            } catch (...) {
+                std::get<bool>(rules_[idx]) = true;
+            }
+        }
         return true;
     }
 
-    /** @brief Virtual checker run
+    /** @brief Virtual checker for one regexp and for all data chunks
      *
-     * See description in class Base
+     * By default only for stdlib regexp
+     * @param [in] rule_idx RegEx rule index for run
     */
     virtual void check(size_t rule_idx) override {
-        const std::regex re{std::get<std::string>(rules_[rule_idx])};
         for (size_t iter_td = 0; iter_td < scale_td_; ++iter_td) {
             for (auto& data : data_) {
-                if (std::regex_match(data.cbegin(), data.cend(), re)) {
+                if (std::regex_match(data.cbegin(), data.cend(), comp_rules_[rule_idx])) {
                     ++metric_ext_[rule_idx];
                 }
             }

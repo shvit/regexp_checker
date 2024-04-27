@@ -1,6 +1,0 @@
-NAME=stdlib-compiled
-REPO=
-REPO_BUILD=
-REPO_LINKING=
-
-include ../build.mk

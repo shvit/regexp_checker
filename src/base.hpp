@@ -26,9 +26,16 @@ protected:
 
     Duration time_{}; ///< Duration of test
 
-    std::string name_{}; ///< Current regexp name (need will fill in init())
+    /// Current regexp name; may fill later in init()
+    std::string name_{
+#ifdef TEST_NAME
+        TEST_NAME
+#else
+        "unknown"
+#endif
+    }; 
 
-    std::vector<size_t> metric_ext_{}; ///< Metric of matching
+    std::vector<size_t> metric_ext_{}; ///< Metric of matching (counter for successful match rules)
 
     /** @brief Check is ready for prepare
      *

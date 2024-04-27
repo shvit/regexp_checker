@@ -29,7 +29,6 @@ public:
      * @return True on success and no errors else false
     */
     virtual bool init() override {
-        name_ = "tiny-regex-c";
         comp_rules_.reserve(rules_.size());
         for (size_t idx = 0U; idx < comp_rules_.size(); ++idx) {
             comp_rules_[idx] = re_compile(std::get<std::string>(rules_[idx]).c_str());

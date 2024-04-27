@@ -15,18 +15,22 @@ Data chunks in directory: `test/data`
 | Alias | Description | URL of repository |
 | --- | --- | --- |
 | stdlib | C++ standard library | - | 
-| stdlib-compiled | C++ standard library with pre compiled rules | - | 
 | tiny-regex-c | C regexp code | https://github.com/kokke/tiny-regex-c |
 | ximtech | C library | https://github.com/ximtech/Regex |
 | boost | Regex from C++ library | https://github.com/boostorg/regex.git |
+| hyperscan | Intel regex library | https://github.com/intel/hyperscan |
+| google-re2 | Google C++ regex library | https://github.com/google/re2 |
 
 # Build and run
 
 ## Installing dependencies
 
 <pre>
-sudo apt install build-essential cmake ragel
+sudo apt install build-essential cmake ragel git
 </pre>
+
+Also need install `abseil-cpp` from https://github.com/abseil/abseil-cpp
+(see README for instructions)
 
 ## Build
 

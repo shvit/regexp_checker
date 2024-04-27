@@ -23,7 +23,6 @@ public:
      * See description in class Base
     */
     virtual bool init() override {
-        name_ = "boost-compiled";
         for (size_t idx = 0U; idx < rules_.size(); ++idx) {
             try {
                 comp_rules_.emplace_back(std::get<std::string>(rules_[idx]));

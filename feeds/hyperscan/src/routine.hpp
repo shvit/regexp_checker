@@ -44,8 +44,6 @@ public:
      * See description in class Base
     */
     virtual bool init() override {
-        name_ = "hyperscan";
-
         comp_rules_.resize(rules_.size());
         for (size_t idx = 0U; idx < rules_.size(); ++idx) {
             hs_database_t *database;

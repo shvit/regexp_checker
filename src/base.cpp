@@ -19,7 +19,7 @@ auto Base::get_metric() -> std::string
             ss << (ss.tellp() > 0 ? "," : "") << name << "=" << value;
         };
 
-    push_metric("name", name_);
+    push_metric("name", get_name());
     push_metric("errors", errors_.size());
     //push_metric("regexp_count", rules_.size());
     //push_metric("regexp_bad", bad_metric);
@@ -131,11 +131,9 @@ bool Base::run()
         return false;
     }
 
-    if (name_.empty()) {
-        if(!init()) {
-            errors_.emplace_back("Failed initialize - bad call init()");
-            return false;
-        }
+    if(!init()) {
+        errors_.emplace_back("Failed initialize - bad call init()");
+        return false;
     }
 
     // Run

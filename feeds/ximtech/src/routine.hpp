@@ -29,7 +29,6 @@ public:
      * @return True on success and no errors else false
     */
     virtual bool init() override {
-        name_ = "ximtech";
         comp_rules_.reserve(rules_.size());
         for (size_t idx = 0U; idx < comp_rules_.size(); ++idx) {
             regexCompile(&comp_rules_[idx], std::get<std::string>(rules_[idx]).c_str());
