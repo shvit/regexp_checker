@@ -11,6 +11,8 @@ clean: $(SUBDIRS) FORCE
 check: $(SUBDIRS) FORCE
 	@echo "Full results:"
 	@cat results/$(GLOBAL_LOG)
+	@echo "Formatted results:"
+	@src/show_results.sh results/$(GLOBAL_LOG)
 
 $(SUBDIRS): FORCE
 	$(MAKE) -C $@ $(MAKECMDGOALS) GLOBAL_LOG=$(GLOBAL_LOG)

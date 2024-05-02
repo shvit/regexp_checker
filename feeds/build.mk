@@ -34,6 +34,7 @@ $(APP): get
 			fi \
 		fi; \
 		echo "Build checker for '$(NAME)' ..."; \
+		cd $(CWD); \
 		cp ../../src/checker.cpp src/checker.cpp; \
 		$(CXX) src/$(CHEKER).cpp ../../src/base.cpp $(REPO_LINKING) $(CFLAGS) -o $@ $(LDFLAGS) -DTEST_NAME="\"$(NAME)\""; \
 	fi

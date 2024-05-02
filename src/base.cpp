@@ -20,12 +20,12 @@ auto Base::get_metric() -> std::string
         };
 
     push_metric("name", get_name());
-    push_metric("errors", errors_.size());
+    push_metric("errors", errors_.size() + bad_metric);
     //push_metric("regexp_count", rules_.size());
     //push_metric("regexp_bad", bad_metric);
     //push_metric("data_chunk_count", data_.size());
-    push_metric("checked_regexps", (rules_.size() - bad_metric) * scale_re_);
-    push_metric("checked_data_chunks", data_.size() * scale_td_);
+    push_metric("regex_count", (rules_.size() - bad_metric) * scale_re_);
+    push_metric("data_chunks", data_.size() * scale_td_);
     //push_metric("duration", time_.count());
 
     auto temp_duration = time_;
@@ -50,8 +50,9 @@ auto Base::get_metric() -> std::string
             ss2 << (ss2.tellp() > 0 ? "," : "") << (idx + 1U) << "{" << (std::get<bool>(rules_[idx]) ? "bad" : std::to_string(metric_ext_[idx])) << "}";
             sum += (std::get<bool>(rules_[idx]) ? 0U : metric_ext_[idx]);
         }
-        ss2 << (ss2.tellp() > 0 ? "," : "") << "SUM{" << sum << "}";
-        push_metric("rule_metric=", ss2.str());
+        //ss2 << (ss2.tellp() > 0 ? "," : "") << "SUM{" << sum << "}";
+        push_metric("match_count", sum);
+        push_metric("full_metric", ss2.str());
     }
 
     return ss.str();
