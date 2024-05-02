@@ -26,11 +26,19 @@ Data chunks in directory: `test/data`
 ## Installing dependencies
 
 <pre>
-sudo apt install build-essential cmake ragel git
+sudo apt install build-essential cmake ragel git 
 </pre>
 
-Also need install `abseil-cpp` from https://github.com/abseil/abseil-cpp
+For using by Hyperscan also need boost
+<pre>
+sudo apt install libboost-all-dev
+</pre>
+
+For using by Google RE2 also need install `abseil-cpp` from https://github.com/abseil/abseil-cpp
 (see README for instructions)
+<pre>
+git clone https://github.com/abseil/abseil-cpp abseil-cpp && cd abseil-cpp && mkdir -p bin && cd bin && cmake -DCMAKE_CXX_STANDARD=17 -DCMAKE_POSITION_INDEPENDENT_CODE=ON .. && cmake --build . && sudo cmake --install .
+</pre>
 
 ## Build
 
@@ -46,14 +54,16 @@ make check
 
 ## Show results after check
 
+All iterations of checks placed in seperetaed files at directory: `results`
+
 <pre>
 ls -1 results
 </pre>
-
-All iterations of checks placed in seperetaed files at directory: `results`
 
 ## Cleaning
 
 <pre>
 make clean
 </pre>
+
+Also deleting all loaded git repository.
