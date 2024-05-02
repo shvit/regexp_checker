@@ -19,25 +19,24 @@ all: $(APP)
 
 get:
 	@if [ -n "$(REPO)" ]; then \
-		if [ -d "$(DIR_REPO)" ]; then \
-			echo "Check repository '$(NAME)' ..."; \
-			cd $(DIR_REPO) && git reset --hard && git clean -fd; \
-		else \
+		if [ ! -d "$(DIR_REPO)" ]; then \
 			echo "Collect repository '$(NAME)' ..."; \
 			git clone -q $(REPO) $(DIR_REPO); \
 		fi \
 	fi
 
 $(APP): get
-	@if [ -n "$(REPO)" ]; then \
-		echo "Build external repository '$(NAME)' ..."; \
-		if [ -n "$(REPO_BUILD)" ]; then \
-			echo -n; $(REPO_BUILD) \
-		fi \
+	@if [ ! -f "$(APP)" ]; then \
+		if [ -n "$(REPO)" ]; then \
+			echo "Build external repository '$(NAME)' ..."; \
+			if [ -n "$(REPO_BUILD)" ]; then \
+				echo -n; $(REPO_BUILD) \
+			fi \
+		fi; \
+		echo "Build checker for '$(NAME)' ..."; \
+		cp ../../src/checker.cpp src/checker.cpp; \
+		$(CXX) src/$(CHEKER).cpp ../../src/base.cpp $(REPO_LINKING) $(CFLAGS) -o $@ $(LDFLAGS) -DTEST_NAME="\"$(NAME)\""; \
 	fi
-	@echo "Build checker for '$(NAME)' ..."
-	@cp ../../src/checker.cpp src/checker.cpp
-	$(CXX) src/$(CHEKER).cpp ../../src/base.cpp $(REPO_LINKING) $(CFLAGS) -o $@ $(LDFLAGS) -DTEST_NAME="\"$(NAME)\""
 
 check: $(APP)
 	@echo "Run checker '$(NAME)' ..."
