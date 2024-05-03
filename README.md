@@ -54,7 +54,7 @@ make check
 
 ## Show results after check
 
-All iterations of checks placed in seperetaed files at directory: `results`
+All iterations of checks placed in separated files at directory: `results`
 
 <pre>
 ls -1 results

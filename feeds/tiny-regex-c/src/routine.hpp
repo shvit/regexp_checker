@@ -12,7 +12,7 @@ extern "C" {
 
 /** @brief Virtual class for testing regexp
  * 
- * Testing regexp from https://github.com/ximtech/Regex
+ * Testing regexp from https://github.com/kokke/tiny-regex-c
  * Used base virtual class Base
 */
 class Routine: public Base {

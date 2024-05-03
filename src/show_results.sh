@@ -3,10 +3,19 @@
 declare -A DAT
 declare -i columns=0
 declare -i rows=0
-declare -i added_row=0
+declare -i added_row=0 # bool flag
 HEADER="name,errors,regex_count,data_chunks,duration,match_count"
 
-split_on_commas_() {
+# @brief Split comma separated values to output values list
+#
+# Sample:
+#   Input data: alpha,bravo,charlie
+#   Output data: alpha
+#                bravo
+#                charlie
+# @param $1 Comma separeted values
+# @return List values
+split_on_commas() {
   local IFS=$1
   local WORD_LIST=($2)
   for word in "${WORD_LIST[@]}"; do
@@ -14,22 +23,24 @@ split_on_commas_() {
   done
 }
 
-rows=$((rows+1))
-for name in $(split_on_commas_ "," "$HEADER"); do
-    columns=$((columns+1))
-    DAT[$rows,$columns]=$name
-done
-#for ((i=1;i<=columns;i++)) do echo "column_$i='${DAT[$rows,$i]}'"; done
-
+# @brief Split data from key=value and push to result array
+#
+# Sample:
+#   Input data: key1=value1=wrong1
+#   Processing:
+#     - find in array header[i]==key1 and remember column i
+#     - if not found - return
+#     - if added_row==0 then add new row and set added_row=1
+#     - write to last row and rememberd column value1
+# @param $1 Input data
 push_data_to_array() {
     local -A TEMP
     local -i cnt=0
     local values=($1)
-    for name in $(split_on_commas_ "=" "$values"); do
+    for name in $(split_on_commas "=" "$values"); do
         cnt=$((cnt+1))
         TEMP[$cnt]=$name
     done
-    #for ((i=1;i<=cnt;i++)) do echo "item$i='${TEMP[$i]}'"; done
     if (( cnt > 1)); then
         if (( added_row == 0 )); then
             rows=$((rows+1))
@@ -40,40 +51,47 @@ push_data_to_array() {
                 DAT[$rows,$i]=${TEMP[2]}
             fi
         done
-        #echo "${TEMP[1]}"
-        #echo "${TEMP[2]}"
     fi
 }
 
-#push_data_to_array "name=stdlib"
-#push_data_to_array "errors=0"
-#push_data_to_array "checked_regexps=15000"
-#push_data_to_array "checked_data_chunks=45"
-#push_data_to_array "duration=0.830s"
-#push_data_to_array "rule_metric=1"
-
+# @brief Split data from many key=value comma separated and push to result array
+#
+# Sample:
+#   Input data: key1=value1=wrong1,key2=value2,key3=value3=wrong3
+#   Processing:
+#     - set added_row=0 (for add new row in result array)
+#     - split comma separeted input line
+#     - try to push key=value via push_data_to_array() 
+# @param $1 Line from source file with comma separated key=value
 push_line() {
     local one_line=($1)
     added_row=0
-    for one_commas_item in $(split_on_commas_ "," "$one_line"); do
+    for one_commas_item in $(split_on_commas "," "$one_line"); do
         push_data_to_array "$one_commas_item"
     done
 }
 
+##### Function main() #####
+
+# Fill headers in result array
+rows=$((rows+1))
+for name in $(split_on_commas "," "$HEADER"); do
+    columns=$((columns+1))
+    DAT[$rows,$columns]=$name
+done
+
+# Read file with data results
 while read -r line; 
 do
     push_line "$line";
 done < "$1"
 
-#echo "---------------------- DEBUG ----------------------"
-#for ((r=1;r<=rows;r++)) do for ((i=1;i<=columns;i++)) do echo "cell($r,$i)='${DAT[$r,$i]}'"; done; done
-
+# Show output from result array
 for ((r=1;r<=rows;r++)) do
     one_line=
     for ((i=1;i<=columns;i++)) do
         one_val=${DAT[$r,$i]}
         one_item=$(printf "%-15s" "$one_val")
-        #echo "cell($r,$i)='${DAT[$r,$i]}'"
         one_line="$one_line $one_item"
     done
     echo "$one_line"

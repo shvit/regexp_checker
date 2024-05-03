@@ -11,7 +11,7 @@
 
 /** @brief Virtual class for testing regexp
  * 
- * Testing regexp from https://github.com/ximtech/Regex
+ * Testing regexp from https://github.com/intel/hyperscan
  * Used base virtual class Base
 */
 class Routine: public Base {
@@ -20,11 +20,11 @@ protected:
     std::vector<std::tuple<hs_database_t*, hs_scratch_t*>> comp_rules_; ///< Storage for compiled regexp
 
 public:
-    static std::optional<size_t> last_idx;
+    static bool last_idx;
 
     static int eventHandler(unsigned int id, unsigned long long from,
                         unsigned long long to, unsigned int flags, void *ctx) {
-        Routine::last_idx = id;
+        Routine::last_idx = true;
         return 0;
     }
 
@@ -63,6 +63,12 @@ public:
                 std::get<1>(comp_rules_[idx]) = scratch;
             }
         }
+        for (size_t idx = 0U; idx < comp_rules_.size(); ++idx) {
+            if (!std::get<0>(comp_rules_[idx]) || !std::get<1>(comp_rules_[idx])) {
+                std::get<bool>(rules_[idx]) = true;
+                continue;
+            }
+        }
         return true;
     }
 
@@ -73,22 +79,16 @@ public:
     virtual void check(size_t rule_idx) override {
         for (size_t iter_td = 0; iter_td < scale_td_; ++iter_td) {
             for (auto& data : data_) {
-                if (!std::get<0>(comp_rules_[rule_idx]) || !std::get<1>(comp_rules_[rule_idx])) {
-                    std::get<bool>(rules_[rule_idx]) = true;
-                    continue;
-                }
-                if (hs_scan(std::get<0>(comp_rules_[rule_idx]), 
-                            data.data(), 
-                            data.size(), 
-                            0, 
-                            std::get<1>(comp_rules_[rule_idx]), 
-                            &Routine::eventHandler, 
-                            NULL) == HS_SUCCESS) {
-                    //++metric_ext_[rule_idx];
-                }
-                if (Routine::last_idx.has_value()) {
+                Routine::last_idx = false;
+                hs_scan(std::get<0>(comp_rules_[rule_idx]), 
+                        data.data(), 
+                        data.size(), 
+                        0, 
+                        std::get<1>(comp_rules_[rule_idx]), 
+                        &Routine::eventHandler, 
+                        NULL);
+                if (Routine::last_idx) {
                     ++metric_ext_[rule_idx];
-                    Routine::last_idx.reset();
                 }
             }
         }
@@ -96,4 +96,4 @@ public:
 
 };
 
-std::optional<size_t> Routine::last_idx;
+bool Routine::last_idx = false;

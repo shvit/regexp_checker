@@ -7,7 +7,7 @@
 
 /** @brief Virtual class for testing regexp
  * 
- * Testing regexp from https://github.com/ximtech/Regex
+ * Testing regexp from https://github.com/google/re2
  * Used base virtual class Base
 */
 class Routine: public Base {
