@@ -40,7 +40,7 @@ auto Base::get_metric() -> std::string
         std::stringstream ss2;
         if (hours.count()) ss2 << hours.count() << "h";
         if (minutes.count() || (ss2.tellp() > 0)) ss2 << minutes.count() << "m";
-        ss2 << seconds.count() << "." << milliseconds.count() << "s";
+        ss2 << seconds.count() << "." << std::setw(3) << std::setfill('0') << milliseconds.count() << "s";
         push_metric("duration", ss2.str());
     }
     {
