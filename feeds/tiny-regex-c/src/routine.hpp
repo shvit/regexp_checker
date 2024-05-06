@@ -28,13 +28,14 @@ public:
      * @return True on success and no errors else false
     */
     virtual bool init() override {
-        comp_rules_.resize(rules_.size());
-        for (size_t idx = 0U; idx < comp_rules_.size(); ++idx) {
-            comp_rules_[idx] = re_compile(std::get<std::string>(rules_[idx]).c_str());
-            if (!comp_rules_[idx]) {
-                std::get<bool>(rules_[idx]) = true;
-            }
-        }
+        //comp_rules_.resize(rules_.size());
+        //for (size_t idx = 0U; idx < comp_rules_.size(); ++idx) {
+        //    comp_rules_[idx] = re_compile(std::get<std::string>(rules_[idx]).c_str());
+        //    if (!comp_rules_[idx]) {
+        //        std::get<bool>(rules_[idx]) = true;
+        //    }
+        //    std::cout << "*** RULE='" << std::get<std::string>(rules_[idx]) << "', is_error=" << std::get<bool>(rules_[idx]) << std::endl;
+        //}
         return true;
     }
 
@@ -49,7 +50,8 @@ public:
             for (auto& data : data_) {
                 int ret;
                 char *pos = data.data();
-                while ((ret = re_matchp(comp_rules_[rule_idx], pos, &dummy)) != -1) {
+                //while ((ret = re_matchp(comp_rules_[rule_idx], pos, &dummy)) != -1) {
+                while ((ret = re_match(std::get<std::string>(rules_[rule_idx]).c_str(), pos, &dummy)) != -1) {
                     ++metric_ext_[rule_idx];
                     pos += ret + dummy;
                 }

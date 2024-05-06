@@ -29,17 +29,17 @@ auto Base::get_metric() -> std::string
     //push_metric("duration", time_.count());
 
     auto temp_duration = time_;
-    auto hours = std::chrono::duration_cast<std::chrono::hours>(temp_duration);
-    temp_duration -= hours;
-    auto minutes = std::chrono::duration_cast<std::chrono::minutes>(temp_duration);
-    temp_duration -= minutes;
+    //auto hours = std::chrono::duration_cast<std::chrono::hours>(temp_duration);
+    //temp_duration -= hours;
+    //auto minutes = std::chrono::duration_cast<std::chrono::minutes>(temp_duration);
+    //temp_duration -= minutes;
     auto seconds = std::chrono::duration_cast<std::chrono::seconds>(temp_duration);
     temp_duration -= seconds;
     auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(temp_duration);
     {
         std::stringstream ss2;
-        if (hours.count()) ss2 << hours.count() << "h";
-        if (minutes.count() || (ss2.tellp() > 0)) ss2 << minutes.count() << "m";
+        //if (hours.count()) ss2 << hours.count() << "h";
+        //if (minutes.count() || (ss2.tellp() > 0)) ss2 << minutes.count() << "m";
         ss2 << seconds.count() << "." << std::setw(3) << std::setfill('0') << milliseconds.count() << "s";
         push_metric("duration", ss2.str());
     }
