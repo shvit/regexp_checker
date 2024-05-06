@@ -19,6 +19,6 @@ using TestDataItem = std::vector<char>;
 /// @brief List all data chunks
 using TestData = std::vector<TestDataItem>;
 
-constexpr size_t default_scale_regexp = 1000U; ///< Regexp iterations count
+constexpr size_t default_scale_regexp = 20000U; ///< Regexp iterations count
 
-constexpr size_t default_scale_test_data = 5U; ///< Data chunks iteration count
+constexpr size_t default_scale_test_data = 10U; ///< Data chunks iteration count

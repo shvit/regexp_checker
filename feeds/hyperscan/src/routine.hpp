@@ -1,6 +1,7 @@
 #pragma once
 
 #include <optional>
+//#include <iostream>
 
 #include "../../../src/checker.hpp"
 #include "../../../src/base.hpp"
@@ -20,11 +21,12 @@ protected:
     std::vector<std::tuple<hs_database_t*, hs_scratch_t*>> comp_rules_; ///< Storage for compiled regexp
 
 public:
-    static bool last_idx;
+    static size_t last_idx;
 
     static int eventHandler(unsigned int id, unsigned long long from,
                         unsigned long long to, unsigned int flags, void *ctx) {
-        Routine::last_idx = true;
+        //std::cout << "!!! event: id=" << id << ", from=" << from << ", to=" << to << std::endl;
+        ++Routine::last_idx;
         return 0;
     }
 
@@ -48,7 +50,7 @@ public:
         for (size_t idx = 0U; idx < rules_.size(); ++idx) {
             hs_database_t *database;
             hs_compile_error_t *compile_err;
-            if (hs_compile(std::get<std::string>(rules_[idx]).c_str(), HS_FLAG_DOTALL, HS_MODE_BLOCK, NULL, &database, &compile_err) != HS_SUCCESS) {
+            if (hs_compile(std::get<std::string>(rules_[idx]).c_str(), HS_FLAG_DOTALL | HS_FLAG_SOM_LEFTMOST, HS_MODE_BLOCK, NULL, &database, &compile_err) != HS_SUCCESS) {
                 hs_free_compile_error(compile_err);
                  std::get<bool>(rules_[idx]) = true;
                  continue;
@@ -79,7 +81,7 @@ public:
     virtual void check(size_t rule_idx) override {
         for (size_t iter_td = 0; iter_td < scale_td_; ++iter_td) {
             for (auto& data : data_) {
-                Routine::last_idx = false;
+                Routine::last_idx = 0U;
                 hs_scan(std::get<0>(comp_rules_[rule_idx]), 
                         data.data(), 
                         data.size(), 
@@ -87,8 +89,9 @@ public:
                         std::get<1>(comp_rules_[rule_idx]), 
                         &Routine::eventHandler, 
                         NULL);
+                //std::cout << "*** Iteration idx=" << rule_idx << ": counter=" << Routine::last_idx << std:: endl;
                 if (Routine::last_idx) {
-                    ++metric_ext_[rule_idx];
+                    metric_ext_[rule_idx] += Routine::last_idx;
                 }
             }
         }
@@ -96,4 +99,4 @@ public:
 
 };
 
-bool Routine::last_idx = false;
+size_t Routine::last_idx;

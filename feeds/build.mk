@@ -25,7 +25,10 @@ get:
 		fi \
 	fi
 
-$(APP): get
+src/checker.cpp: ../../src/checker.cpp
+	cp ../../src/checker.cpp src/checker.cpp
+
+$(APP): src/checker.cpp src/routine.hpp ../../src/base.cpp ../../src/base.hpp ../../src/checker.hpp | get
 	@if [ ! -f "$(APP)" ]; then \
 		if [ -n "$(REPO)" ]; then \
 			echo "Build external repository '$(NAME)' ..."; \
@@ -33,11 +36,9 @@ $(APP): get
 				echo -n; $(REPO_BUILD) \
 			fi \
 		fi; \
-		echo "Build checker for '$(NAME)' ..."; \
-		cd $(CWD); \
-		cp ../../src/checker.cpp src/checker.cpp; \
-		$(CXX) src/$(CHEKER).cpp ../../src/base.cpp $(REPO_LINKING) $(CFLAGS) -o $@ $(LDFLAGS) -DTEST_NAME="\"$(NAME)\""; \
 	fi
+	@echo "Build checker for '$(NAME)' ..."
+	$(CXX) src/$(CHEKER).cpp ../../src/base.cpp $(REPO_LINKING) $(CFLAGS) -o $@ $(LDFLAGS) -DTEST_NAME="\"$(NAME)\""
 
 check: $(APP)
 	@echo "Run checker '$(NAME)' ..."

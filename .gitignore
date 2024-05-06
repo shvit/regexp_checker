@@ -37,3 +37,4 @@ results
 feeds/?*/checker*
 feeds/?*/src/checker*
 repo
+backup/

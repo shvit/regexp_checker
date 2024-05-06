@@ -29,7 +29,7 @@ public:
      * @return True on success and no errors else false
     */
     virtual bool init() override {
-        comp_rules_.reserve(rules_.size());
+        comp_rules_.resize(rules_.size());
         for (size_t idx = 0U; idx < comp_rules_.size(); ++idx) {
             regexCompile(&comp_rules_[idx], std::get<std::string>(rules_[idx]).c_str());
             if (!comp_rules_[idx].isPatternValid) {
@@ -47,8 +47,11 @@ public:
     virtual void check(size_t rule_idx) override {
         for (size_t iter_td = 0; iter_td < scale_td_; ++iter_td) {
             for (auto& data : data_) {
-                if (Matcher dummy = regexMatch(&comp_rules_[rule_idx], data.data()); dummy.isFound) {
+                char *pos = data.data();
+                Matcher ret;
+                while ((ret = regexMatch(&comp_rules_[rule_idx],pos)).isFound) {
                     ++metric_ext_[rule_idx];
+                    pos += ret.foundAtIndex + ret.matchLength;
                 }
             }
         }

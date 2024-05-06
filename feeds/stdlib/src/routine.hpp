@@ -42,8 +42,10 @@ public:
     virtual void check(size_t rule_idx) override {
         for (size_t iter_td = 0; iter_td < scale_td_; ++iter_td) {
             for (auto& data : data_) {
-                if (std::regex_match(data.cbegin(), data.cend(), comp_rules_[rule_idx])) {
+                std::string data_str(data.data(), data.size());
+                for (std::smatch sm; std::regex_search(data_str, sm, comp_rules_[rule_idx]);) {
                     ++metric_ext_[rule_idx];
+                    data_str = sm.suffix();
                 }
             }
         }

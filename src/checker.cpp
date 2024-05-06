@@ -19,7 +19,6 @@ int main(int argc, char* argv[])
             break;
         }
 
-        std::cout << std::endl;
         b.run();
     } while(false);
 
